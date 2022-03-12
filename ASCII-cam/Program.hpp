@@ -15,7 +15,7 @@
 
 class Program {
 public:
-    Program(uint32_t);
+    Program(uint);
     
     void run();
     
@@ -30,7 +30,8 @@ private:
     
     sf::Font m_ascii_font;
     
-    void message(std::string);
+private:
+    uint getOptimalCharacterSize();
 };
 
 #endif /* Program_hpp */

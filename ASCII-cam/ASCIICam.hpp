@@ -13,20 +13,22 @@
 #include <opencv2/videoio.hpp>
 #include <opencv2/imgproc.hpp>
 
+using uint = unsigned int;
+
 class ASCIICam {
 public:
     ASCIICam();
     
-    void setDimension(uint32_t);
+    void setDimension(uint);
     void increaseThreshold();
     void decreaseThreshold();
     void grab(std::string &, bool = false);
     void close();
     
 private:
-    const char LR_BORDER = 'W';
-    const char TOP_BORDER = '|';
-    const char BOTTOM_BORDER = ';';
+    const char LR_BORDER        = 'W';
+    const char TOP_BORDER       = '|';
+    const char BOTTOM_BORDER    = ';';
     
     std::string palette = "@#W$9876543210?!abc;:+=-,._ ";
     int threshold;

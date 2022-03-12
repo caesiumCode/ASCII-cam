@@ -12,12 +12,13 @@ ASCIICam::ASCIICam()
     threshold = 0;
     
     m_vc.open(0);
-    if (!m_vc.isOpened()) {
+    if (!m_vc.isOpened())
+    {
         std::cout << "[error] Impossible to open cam" << std::endl;
         exit(1);
     }
     
-    m_source_width = static_cast<uint32_t>(m_vc.get(cv::CAP_PROP_FRAME_WIDTH));
+    m_source_width  = static_cast<uint32_t>(m_vc.get(cv::CAP_PROP_FRAME_WIDTH));
     m_source_height = static_cast<uint32_t>(m_vc.get(cv::CAP_PROP_FRAME_HEIGHT));
     
     m_target_width  = m_source_width;
@@ -27,7 +28,7 @@ ASCIICam::ASCIICam()
     m_ratio = static_cast<float>(m_source_height) / static_cast<float>(m_source_width);
 }
 
-void ASCIICam::setDimension(uint32_t target_width)
+void ASCIICam::setDimension(uint target_width)
 {
     m_target_width  = target_width;
     m_target_height = m_ratio * target_width;
@@ -37,12 +38,14 @@ void ASCIICam::setDimension(uint32_t target_width)
     
 }
 
-void ASCIICam::increaseThreshold() {
+void ASCIICam::increaseThreshold()
+{
     threshold++;
     palette.push_back(' ');
 }
 
-void ASCIICam::decreaseThreshold() {
+void ASCIICam::decreaseThreshold()
+{
     if (threshold > 0)
     {
         threshold--;
@@ -61,18 +64,21 @@ void ASCIICam::grab(std::string & str_frame, bool init)
     cv::resize(frame2, frame1, cv::Size(), m_scale, m_scale);
     cv::flip(frame1, frame2, 1);
     
-    int nrows = frame2.rows;
-    int ncols = frame2.cols;
+    uint nrows = frame2.rows;
+    uint ncols = frame2.cols;
     
-    for (int i = 0; i < nrows; i++) {
-    for (int j = 0; j < ncols; j++) {
-        float pixel_value   = static_cast<float>(frame2.at<uchar>(i, j));
-        int index           = static_cast<int>(linearInterpolation(0, palette.size()-1, 255.0f, .0f, pixel_value));
-        
-        if (init)   str_frame.push_back(j == 1 ? TOP_BORDER : (i == ncols-1 ? BOTTOM_BORDER : LR_BORDER));
-        else        str_frame.push_back(palette[index]);
+    for (int i = 0; i < nrows; i++)
+    {
+        for (int j = 0; j < ncols; j++)
+        {
+            float pixel_value   = static_cast<float>(frame2.at<uchar>(i, j));
+            int index           = static_cast<int>(linearInterpolation(0, palette.size()-1, 255.0f, .0f, pixel_value));
+            
+            if (init)   str_frame.push_back(j == 1 ? TOP_BORDER : (i == ncols-1 ? BOTTOM_BORDER : LR_BORDER));
+            else        str_frame.push_back(palette[index]);
 
-    }
+        }
+        
         str_frame.push_back('\n');
     }
     
