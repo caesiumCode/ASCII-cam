@@ -20,10 +20,14 @@ public:
     void setDimension(uint32_t);
     void increaseThreshold();
     void decreaseThreshold();
-    void grab(std::string &);
+    void grab(std::string &, bool = false);
     void close();
     
 private:
+    const char LR_BORDER = 'W';
+    const char TOP_BORDER = '|';
+    const char BOTTOM_BORDER = ';';
+    
     std::string palette = "@#W$9876543210?!abc;:+=-,._ ";
     int threshold;
     
@@ -33,6 +37,7 @@ private:
     uint32_t m_target_width, m_target_height;
     float m_scale, m_ratio;
     
+private:
     float linearInterpolation(float, float, float, float, float);
 };
 

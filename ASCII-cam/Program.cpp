@@ -9,25 +9,50 @@
 
 Program::Program(uint32_t w)
 {
+    // setup cam
     m_ascii_cam.setDimension(w);
-    m_ascii_cam.grab(m_ascii_frame);
+    m_ascii_cam.grab(m_ascii_frame, true);
     
+    // setup ascii frame
     m_ascii_font.loadFromFile("SpaceMono-Regular.ttf");
     m_ascii_drawable.setFont(m_ascii_font);
     m_ascii_drawable.setLineSpacing(0.6f);
     m_ascii_drawable.setLetterSpacing(1.5f);
     m_ascii_drawable.setFillColor(sf::Color::White);
     m_ascii_drawable.setString(m_ascii_frame);
-    sf::FloatRect ascii_frame_bounds = m_ascii_drawable.getGlobalBounds();
     
+    sf::FloatRect ascii_frame_bounds = m_ascii_drawable.getLocalBounds();
     
-    float ratio_hw = ascii_frame_bounds.height / ascii_frame_bounds.width;
-    m_window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_WIDTH * ratio_hw), "ASCII cam");
+    // Find the optimal character size
+    int character_size = 1;
+    m_ascii_drawable.setCharacterSize(character_size);
+    ascii_frame_bounds = m_ascii_drawable.getLocalBounds();
     
-    float window_width = m_window.getSize().x, window_height = m_window.getSize().y;
-    m_ascii_drawable.setScale(window_width/ascii_frame_bounds.width,
-                              window_height/ascii_frame_bounds.height);
-    m_ascii_drawable.setPosition(0, -ascii_frame_bounds.top);
+    while (ascii_frame_bounds.width <= WINDOW_WIDTH) {
+        character_size *= 2;
+        m_ascii_drawable.setCharacterSize(character_size);
+        ascii_frame_bounds = m_ascii_drawable.getLocalBounds();
+    }
+    character_size /= 2;
+    m_ascii_drawable.setCharacterSize(character_size);
+    ascii_frame_bounds = m_ascii_drawable.getLocalBounds();
+    
+    while (ascii_frame_bounds.width <= WINDOW_WIDTH) {
+        character_size++;
+        m_ascii_drawable.setCharacterSize(character_size);
+        ascii_frame_bounds = m_ascii_drawable.getLocalBounds();
+    }
+    character_size--;
+    m_ascii_drawable.setCharacterSize(character_size);
+    ascii_frame_bounds = m_ascii_drawable.getLocalBounds();
+    
+    // setup window
+    m_window.create(sf::VideoMode(ascii_frame_bounds.width, ascii_frame_bounds.height), "ASCII cam");
+    
+    // position the ascii frame
+    m_ascii_drawable.setOrigin(ascii_frame_bounds.left + ascii_frame_bounds.width/2.0f,
+                               ascii_frame_bounds.top + ascii_frame_bounds.height/2.0f);
+    m_ascii_drawable.setPosition(0.5f * static_cast<sf::Vector2f>(m_window.getSize()));
 }
 
 void Program::run()
@@ -46,7 +71,9 @@ void Program::run()
         m_ascii_drawable.setString(m_ascii_frame);
         
         m_window.clear(sf::Color::Black);
+        
         m_window.draw(m_ascii_drawable);
+        
         m_window.display();
     }
     

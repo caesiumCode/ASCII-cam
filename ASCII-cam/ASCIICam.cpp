@@ -33,6 +33,8 @@ void ASCIICam::setDimension(uint32_t target_width)
     m_target_height = m_ratio * target_width;
     
     m_scale = static_cast<float>(m_target_width) / static_cast<float>(m_source_width);
+    
+    
 }
 
 void ASCIICam::increaseThreshold() {
@@ -48,7 +50,7 @@ void ASCIICam::decreaseThreshold() {
     }
 }
 
-void ASCIICam::grab(std::string & str_frame)
+void ASCIICam::grab(std::string & str_frame, bool init)
 {
     str_frame.clear();
     
@@ -59,12 +61,17 @@ void ASCIICam::grab(std::string & str_frame)
     cv::resize(frame2, frame1, cv::Size(), m_scale, m_scale);
     cv::flip(frame1, frame2, 1);
     
-    for (int i = 0; i < frame2.rows; i++) {
-    for (int j = 0; j < frame2.cols; j++) {
+    int nrows = frame2.rows;
+    int ncols = frame2.cols;
+    
+    for (int i = 0; i < nrows; i++) {
+    for (int j = 0; j < ncols; j++) {
         float pixel_value   = static_cast<float>(frame2.at<uchar>(i, j));
         int index           = static_cast<int>(linearInterpolation(0, palette.size()-1, 255.0f, .0f, pixel_value));
         
-        str_frame.push_back(palette[index]);
+        if (init)   str_frame.push_back(j == 1 ? TOP_BORDER : (i == ncols-1 ? BOTTOM_BORDER : LR_BORDER));
+        else        str_frame.push_back(palette[index]);
+
     }
         str_frame.push_back('\n');
     }
