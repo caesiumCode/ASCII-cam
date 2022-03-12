@@ -6,9 +6,16 @@
 //
 
 #include <iostream>
+#include <SFML/Graphics.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/videoio.hpp>
+#include <opencv2/imgproc.hpp>
+#include "Program.hpp"
 
 int main(int argc, const char * argv[]) {
-    // insert code here...
-    std::cout << "Hello, World!\n";
-    return 0;
+    Program program(80);
+    
+    program.run();
+    
+    return EXIT_SUCCESS;
 }
